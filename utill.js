@@ -1,29 +1,36 @@
 const jwt = require('jsonwebtoken');
 
-const SECRET_ID = 'ASH$7010'
+const ACCESS_TOKEN_SECRET = 'ASH$7010';
+const REFRESH_TOKEN_SECRET = 'REF$STronG';
 
-const createJWTToken = (payload) => {
+const generateTokens = (payload, deviceId) => {
     try {
-        const token = jwt.sign(payload, SECRET_ID, {
-            expiresIn: '1h'
-        })
-        return token
-    } catch (error) {
-        throw new error('payload missing or invalid', error)
+        const accessToken = jwt.sign({ ...payload, deviceId }, ACCESS_TOKEN_SECRET, { expiresIn: '15m' });
+        const refreshToken = jwt.sign({ ...payload, deviceId }, REFRESH_TOKEN_SECRET, { expiresIn: '7d' });
+        return { accessToken, refreshToken };
+    } catch (err) {
+        throw new Error('Payload missing or invalid');
     }
-}
+};
 
-const verifyToken = (token) => {
+const verifyAccessToken = (token) => {
     try {
-        const retunPayload = jwt.verify(token, SECRET_ID)
-        return retunPayload
-    } catch (error) {
-        throw new error('Token verification faild', error)
+        return jwt.verify(token, ACCESS_TOKEN_SECRET);
+    } catch (err) {
+        throw new Error('Access token verification failed');
     }
-}
+};
+
+const verifyRefreshToken = (token) => {
+    try {
+        return jwt.verify(token, REFRESH_TOKEN_SECRET);
+    } catch (err) {
+        throw new Error('Refresh token verification failed');
+    }
+};
 
 module.exports = {
-    createJWTToken,
-    verifyToken,
-    SECRET_ID
+    generateTokens,
+    verifyAccessToken,
+    verifyRefreshToken
 };

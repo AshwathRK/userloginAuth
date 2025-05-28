@@ -1,6 +1,7 @@
 const User = require('../Model/user.mode');
 const bcrypt = require('bcrypt');
-const { createJWTToken } = require('../utill')
+const { generateTokens, verifyRefreshToken } = require('../utill')
+const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 
 const handleGetLogin = (req, res, next) => {
@@ -17,8 +18,10 @@ const handleGetLogin = (req, res, next) => {
 }
 
 const handlePostLogin = async (req, res, next) => {
+    const deviceId = uuidv4();
     try {
         const { email, password } = req.body;
+
         if (!email || !password) {
             return res.status(400).render('login', {
                 title: 'Login',
@@ -51,14 +54,28 @@ const handlePostLogin = async (req, res, next) => {
             });
         }
 
-        const token = createJWTToken({ uID: user.id, email: user.email });
+        const { accessToken, refreshToken } = generateTokens(
+            { uID: user.id, email: user.email },
+            deviceId
+        );
 
+        // ✅ Make sure this is the only response
         return res
-            .cookie("token", token, {
+            .cookie('accessToken', accessToken, {
                 httpOnly: true,
-                secure: false,
-                sameSite: "lax",
-                path: "/",
+                secure: true,
+                sameSite: 'Strict',
+                maxAge: 15 * 60 * 1000,
+            })
+            .cookie('refreshToken', refreshToken, {
+                httpOnly: true,
+                secure: true,
+                sameSite: 'Strict',
+                maxAge: 7 * 24 * 60 * 60 * 1000,
+            })
+            .cookie('deviceId', deviceId, {
+                httpOnly: false,
+                sameSite: 'Strict',
             })
             .render("userProfile", {
                 message: "Login successful",
@@ -68,7 +85,16 @@ const handlePostLogin = async (req, res, next) => {
 
     } catch (error) {
         console.error("Login error:", error);
-        return res.status(500).json({ error: "An error occurred during login." });
+        // ✅ Avoid double responses here
+        if (!res.headersSent) {
+            return res.status(500).render('login', {
+                title: 'Login',
+                pagelink: './signup',
+                page: "SignUp",
+                message: null,
+                error: "An error occurred during login."
+            });
+        }
     }
 };
 
@@ -86,10 +112,9 @@ const handleGetSignUp = (req, res, next) => {
 };
 
 const handlePostSignUp = async (req, res, next) => {
-    
     try {
-        const { fullname, email, password } = req.body;
-        if (!fullname || !email || !password) {
+        const { fullname, email, dob, gender, password, confirmpassword } = req.body;
+        if (!fullname || !email || !password || !dob || !gender || !confirmpassword) {
 
             return res.status(400).render('signup', {
                 title: 'SignUp',
@@ -111,11 +136,23 @@ const handlePostSignUp = async (req, res, next) => {
                 error: "Email is already in use."
             });
         }
+        const matchedpassword = password === confirmpassword
+        if (!matchedpassword) {
+            return res.status(400).render('signup', {
+                title: 'SignUp',
+                pagelink: './',
+                page: "Login",
+                message: null,
+                error: "Please make sure the Password and Confirm Password fields match."
+            });
+        }
         const hashedPassword = await bcrypt.hash(password, 10);
 
         const newUser = await User.create({
             fullname,
             email,
+            dateofbirth: new Date(dob),
+            gender,
             password: hashedPassword
         });
         return res.render('signup', {

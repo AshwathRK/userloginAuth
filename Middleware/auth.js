@@ -1,22 +1,28 @@
-const { verifyToken } = require('../utill');
+const { verifyAccessToken } = require('../utill');
 
 const verifyTokenfromCookies = (req, res, next) => {
-    const token = req.cookies['token'];
-    // console.log("Cookie token:", token);
+    const token = req.cookies.accessToken;
 
     if (!token) {
-        // console.log("No token found in cookies");
-        return next();
+        return next(); // Proceed without user if no token
     }
 
     try {
-        const userPayload = verifyToken(token);
-        // console.log("Token verified, userPayload:", userPayload);
+        const userPayload = verifyAccessToken(token);
+        const expectedDeviceId = req.cookies.deviceId;
+
+        // ✅ Fix: use `userPayload` instead of undefined `payload`
+        if (userPayload.deviceId !== expectedDeviceId) {
+            return res.status(403).json({ message: 'Token misuse detected' });
+        }
+
         req.user = userPayload;
-        next();
+        return next();
     } catch (error) {
-        // console.error("Token verification failed:", error.message);
-        next();
+        // Optionally clear the cookie if it's invalid
+        res.clearCookie('accessToken');
+        res.clearCookie('refreshToken');
+        return res.status(403).json({ message: 'Invalid or expired token' });
     }
 };
 
