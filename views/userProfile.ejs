@@ -1,14 +1,26 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="./Style/userProfile.css">
     <script src="https://cdn.jsdelivr.net/npm/@tailwindcss/browser@4"></script>
-    <title><%=title%></title>
+    <title>
+        <%=title%>
+    </title>
 </head>
+
 <body>
-    <div>
-        <p class="title font-bold">User Profile</p>
+    <div class="container w-full h-full flex justify-center items-center">
+        <div class="container1 flex items-center justify-center flex-col">
+            <p class="title font-bold">Fullname: <%- userDetails.fullname %></p>
+            <p class="title font-bold">Email: <%- userDetails.email %></p>
+            <p class="title font-bold">Date Of Birth: <%- userDetails.dateofbirth%></p>
+            <p class="title font-bold">Gender: <%- userDetails.gender %></p>
+            <a href="./logout" class="font-bold decoration-blue-400">Logout</a>
+        </div>
     </div>
 </body>
+
 </html>

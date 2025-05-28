@@ -1,5 +1,5 @@
 const express = require('express');
-const { handleGetLogin, handleGetSignUp, handlePostLogin, handlePostSignUp, getUserDetails} = require('../Controller/user.controller');
+const { handleGetLogin, handleGetSignUp, handlePostLogin, handlePostSignUp, getUserDetails, logoutUser} = require('../Controller/user.controller');
 const router = express.Router()
 
 /**
@@ -153,6 +153,22 @@ router.post('/signup', handlePostSignUp)
  */
 
 router.get('/userprofile', getUserDetails)
+
+/**
+ * @swagger
+ * /logout:
+ *   get:
+ *     summary: Logs the user out by clearing authentication cookies
+ *     tags:
+ *       - Authentication
+ *     responses:
+ *       302:
+ *         description: Redirects to the home page after logout
+ *       500:
+ *         description: Server error during logout
+ */
+
+router.get('/logout', logoutUser)
 
 router.use((req, res, next) => {
     res.status(404).render('404', { title: '404' })

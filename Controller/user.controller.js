@@ -4,17 +4,24 @@ const { generateTokens, verifyRefreshToken } = require('../utill')
 const { v4: uuidv4 } = require('uuid');
 const jwt = require('jsonwebtoken');
 
-const handleGetLogin = (req, res, next) => {
-    if (req.user) {
-        return res.render("userProfile", { title: 'User Profile' });
+const handleGetLogin = async (req, res, next) => {
+    if (!req.user) {
+        return res.render('login', {
+            title: 'login',
+            pagelink: './signup',
+            page: "SignUp",
+            message: null,
+            error: null
+        });
     }
-    res.render('login', {
-        title: 'login',
-        pagelink: './signup',
-        page: "SignUp",
-        message: null,
-        error: null
-    });
+    var useremail = req.user.email
+    const user = await User.findOne({ email: useremail });
+    console.log(user)
+    return res.render("userProfile",
+        {
+            title: 'User Profile',
+            userDetails: user
+        });
 }
 
 const handlePostLogin = async (req, res, next) => {
@@ -77,15 +84,14 @@ const handlePostLogin = async (req, res, next) => {
                 httpOnly: false,
                 sameSite: 'Strict',
             })
-            .render("userProfile", {
-                message: "Login successful",
-                userId: user._id,
-                title: 'User Profile'
-            });
+            .render("userProfile",
+                {
+                    title: 'User Profile',
+                    userDetails: user
+                });
 
     } catch (error) {
         console.error("Login error:", error);
-        // ✅ Avoid double responses here
         if (!res.headersSent) {
             return res.status(500).render('login', {
                 title: 'Login',
@@ -99,16 +105,21 @@ const handlePostLogin = async (req, res, next) => {
 };
 
 const handleGetSignUp = (req, res, next) => {
-    if (req.cookies?.token) {
-        return res.render("userProfile", { title: 'User Profile' });
+    if (!req.user) {
+        return res.render('signup', {
+            title: 'signup',
+            pagelink: './',
+            page: "Login",
+            message: null,
+            error: null
+        });
     }
-    res.render('signup', {
-        title: 'signup',
-        pagelink: './',
-        page: "Login",
-        message: null,
-        error: null
-    });
+    return res.render("userProfile",
+        {
+            title: 'User Profile',
+            userDetails: user
+        });
+
 };
 
 const handlePostSignUp = async (req, res, next) => {
@@ -155,7 +166,7 @@ const handlePostSignUp = async (req, res, next) => {
             gender,
             password: hashedPassword
         });
-        return res.render('signup', {
+        return res.render('login', {
             title: 'login',
             pagelink: './signup',
             page: "SignUp",
@@ -175,19 +186,27 @@ const handlePostSignUp = async (req, res, next) => {
     }
 }
 
-const getUserDetails = (req, res, next) => {
-    if (req.user) {
-        return res.render('userProfile', { title: 'User Profile' })
+const getUserDetails = async (req, res, next) => {
+    if (!req.user) {
+        return res.render('404', { title: '404' })
     }
 
-    return res.status(500).json(
+    var useremail = req.user.email
+    const user = await User.findOne({ email: useremail });
+    return res.render("userProfile",
         {
-            message: "Token verification faild login again",
-            status: "Failed"
-        }
-    )
+            title: 'User Profile',
+            userDetails: user
+        });
+}
+
+const logoutUser = (req, res, next) => {
+    res.clearCookie('accessToken');
+    res.clearCookie('refreshToken');
+    res.clearCookie('deviceId');
+    res.redirect('/');
 }
 
 module.exports = {
-    handleGetLogin, handlePostLogin, handleGetSignUp, handlePostSignUp, getUserDetails
+    handleGetLogin, handlePostLogin, handleGetSignUp, handlePostSignUp, getUserDetails, logoutUser
 };

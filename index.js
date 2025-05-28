@@ -15,6 +15,7 @@ const HTTP_Server = express();
 HTTP_Server.set('view engine', 'ejs');
 HTTP_Server.set('views', path.join(__dirname, 'views'));
 
+HTTP_Server.use(express.static('public'));
 HTTP_Server.use(bodyParser.json());
 HTTP_Server.use(bodyParser.urlencoded({ extended: false }));
 
