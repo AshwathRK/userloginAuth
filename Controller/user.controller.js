@@ -16,7 +16,6 @@ const handleGetLogin = async (req, res, next) => {
     }
     var useremail = req.user.email
     const user = await User.findOne({ email: useremail });
-    console.log(user)
     return res.render("userProfile",
         {
             title: 'User Profile',
@@ -123,6 +122,8 @@ const handleGetSignUp = (req, res, next) => {
 };
 
 const handlePostSignUp = async (req, res, next) => {
+
+    debugger
     try {
         const { fullname, email, dob, gender, password, confirmpassword } = req.body;
         if (!fullname || !email || !password || !dob || !gender || !confirmpassword) {
