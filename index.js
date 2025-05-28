@@ -1,4 +1,5 @@
 const express = require('express');
+const cors = require('cors');
 const ejs = require('ejs');
 const path = require('path');
 const router = require('./Routers/routes');
@@ -11,6 +12,7 @@ require('./db');
 const auth = require('./Middleware/auth');
 
 const HTTP_Server = express();
+HTTP_Server.use(cors());
 
 HTTP_Server.set('view engine', 'ejs');
 HTTP_Server.set('views', path.join(__dirname, 'views'));
