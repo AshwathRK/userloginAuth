@@ -65,7 +65,6 @@ const handlePostLogin = async (req, res, next) => {
             deviceId
         );
 
-        // ✅ Make sure this is the only response
         return res
             .cookie('accessToken', accessToken, {
                 httpOnly: true,
