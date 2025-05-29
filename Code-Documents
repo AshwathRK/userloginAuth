@@ -1,0 +1,107 @@
+// **File: d:\Projects\Guvi user project\Controller\user.controller.js**
+
+```javascript
+/**
+ * User Controller
+ * 
+ * This module contains functions for handling user-related operations such as
+ * login, signup, profile viewing, and logout.
+ */
+
+const User = require('../Model/user.mode');
+const bcrypt = require('bcrypt');
+const { generateTokens, verifyRefreshToken } = require('../utill')
+const { v4: uuidv4 } = require('uuid');
+const jwt = require('jsonwebtoken');
+
+/**
+ * Handles GET request for login page
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {void}
+ */
+const handleGetLogin = async (req, res, next) => {
+    // ... existing code ...
+};
+
+/**
+ * Handles POST request for user login
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {void}
+ */
+const handlePostLogin = async (req, res, next) => {
+    // ... existing code ...
+};
+
+/**
+ * Handles GET request for signup page
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {void}
+ */
+const handleGetSignUp = (req, res, next) => {
+    // ... existing code ...
+};
+
+/**
+ * Handles POST request for user signup
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {void}
+ */
+const handlePostSignUp = async (req, res, next) => {
+    // ... existing code ...
+};
+
+/**
+ * Retrieves and renders user details
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {void}
+ */
+const getUserDetails = async (req, res, next) => {
+    // ... existing code ...
+};
+
+/**
+ * Logs out the user by clearing cookies and redirecting to home
+ * 
+ * @param {Object} req - Express request object
+ * @param {Object} res - Express response object
+ * @param {Function} next - Express next middleware function
+ * @returns {void}
+ */
+const logoutUser = (req, res, next) => {
+    // ... existing code ...
+};
+
+module.exports = {
+    handleGetLogin,
+    handlePostLogin,
+    handleGetSignUp,
+    handlePostSignUp,
+    getUserDetails,
+    logoutUser
+};
+```
+
+// This documentation provides an overview of each function in your `user.controller.js` file. Each function is described with its purpose and the parameters it accepts. 
+
+// Key points:
+// 1. All functions are asynchronous except for `handleGetSignUp` and `logoutUser`.
+// 2. The functions handle various user-related operations such as login, signup, viewing profile, and logout.
+// 3. Most functions render views or redirect users based on their authentication status and the operation performed.
+// 4. Error handling is implemented in most functions to provide appropriate feedback to users.
+
+// This documentation should help developers understand the purpose and functionality of each controller function in your user management system.
